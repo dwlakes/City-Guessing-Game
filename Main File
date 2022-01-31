@@ -1,0 +1,1117 @@
+package CityGuessingGameFixed;
+
+import java.io.File;
+
+//Author:David Lakes
+//Title: City Guessing Game
+//Last update: Jan 21,2020
+//Purpose: You guess the city and get hints
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.ListIterator;
+import java.util.Random;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+
+public class MainClass extends Application {
+	
+	Label hint1 = new Label("Hint 1");
+	Label hint2 = new Label("Hint 2");
+	Label results = new Label("Results");
+	Label songInfoLabel = new Label("");
+	int correctGuesses=0;
+	int incorrectGuesses=0;
+	double totalGuesses= correctGuesses+incorrectGuesses;
+	int numberOfHintsUsed=0;
+	int guessRate = 1/1*100;
+	int count = 0; 
+	int gamesPlayed=0;
+	File file = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/AroundTheWorld.wav");
+	Clip song = null;
+	boolean relevantMusic = false;
+	
+	
+    //creates an array to keep track of cities that have been anwers
+	ArrayList<City> usedCities = new ArrayList<City>();
+	
+public void start(Stage primaryStage) throws IOException {
+
+	//starts the game with background music
+if (gamesPlayed==0) {
+	
+	try {
+		song = AudioSystem.getClip();
+	} catch (LineUnavailableException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}  
+	try {
+		song.open(AudioSystem.getAudioInputStream(file));
+	} catch (LineUnavailableException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (UnsupportedAudioFileException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
+	song.loop(Clip.LOOP_CONTINUOUSLY);
+	
+}
+		
+		//Creates Tokyo object
+		City tokyo = new City ("Tokyo", "Asia", null, null,"Japanese", null, null,"Japan", null,"The song is \"Ue o Muite Arukō\""+"\n"
+	    		+ "by Kyu Sakamoto");
+		InputStream tokyoStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Tokyo.png");
+	    Image tokyoImage = new Image(tokyoStream);
+	    tokyo.stream = tokyoStream;
+	    tokyo.image=tokyoImage;
+	    InputStream tokyoFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/TokyoFlag.png");
+	    Image tokyoFlag= new Image(tokyoFlagStream);
+	    tokyo.flag=tokyoFlag;
+	    File tokyoSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Japan.wav");
+	    tokyo.clipFile=tokyoSongStream;
+	    try {
+			Clip tokyoClip = AudioSystem.getClip();
+			tokyo.clip=tokyoClip;
+	    } catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    //Creates Cairo object
+	    City cairo = new City ("Cairo","Africa",null,null,"Arabic", null, null,"Egypt", null,"The song is \"Masha3er\""+"\n"
+	    		+ "by Sherine");
+	    InputStream cairoStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Cairo.png");
+	    Image cairoImage = new Image(cairoStream);
+	    cairo.stream = cairoStream;
+	    cairo.image=cairoImage;
+	    InputStream cairoFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/CairoFlag.png");
+	    Image cairoFlag = new Image(cairoFlagStream);
+	    cairo.flag=cairoFlag;
+	    File cairoSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Cairo.wav");
+	    cairo.clipFile=cairoSongStream;
+	    try {
+			Clip cairoClip = AudioSystem.getClip();
+			cairo.clip=cairoClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    //Creates Berlin object
+	    City berlin = new City ("Berlin","Europe",null,null,"German", null, null,"Germany", null,"The song is \"A Fifth of Bethoven\""+"\n"
+	    		+ "by Walter Murphy");
+	    InputStream berlinStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Berlin.png");
+	    Image berlinImage = new Image(berlinStream);
+	    berlin.stream = berlinStream;
+	    berlin.image=berlinImage;
+	    InputStream berlinFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/BerlinFlag.png");
+	    Image berlinFlag = new Image(berlinFlagStream);
+	    berlin.flag=berlinFlag;
+	    File berlinSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Berlin.wav");
+	    berlin.clipFile=berlinSongStream;
+	    try {
+			Clip berlinClip = AudioSystem.getClip();
+			berlin.clip=berlinClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    //Creates NYC
+	    City NYC = new City ("New York City","North America",null,null, "English", null, null,"the U.S.", null,"The song is \"Empire State of Mind\""+"\n"
+	    		+ "by Jay-Z and Alicia Keyes");
+	    InputStream nycStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/NYC.png");
+	    Image nycImage = new Image(nycStream);
+	    NYC.stream = nycStream;
+	    NYC.image=nycImage;
+	    InputStream nycFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/NYCFlag.png");
+	    Image nycFlag = new Image(nycFlagStream);
+	    NYC.flag=nycFlag;
+	    File nycSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/NYC.wav");
+	    NYC.clipFile=nycSongStream;
+	    try {
+			Clip nycClip = AudioSystem.getClip();
+			NYC.clip=nycClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    
+	    City cusco = new City("Cusco","South America",null,null,"Spanish", null, null,"Peru", null,"The song is \"Como Seguir\""+"\n"
+	    		+ "by Coco Saenz");
+	    InputStream cuscoStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Cusco.png");
+	    Image cuscoImage = new Image(cuscoStream);
+	    cusco.stream = cuscoStream;
+	    cusco.image=cuscoImage;
+	    InputStream cuscoFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/CuscoFlag.png");
+	    Image cuscoFlag = new Image(cuscoFlagStream);
+	    cusco.flag=cuscoFlag;
+	    File cuscoSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Cusco.wav");
+	    cusco.clipFile=cuscoSongStream;
+	    try {
+			Clip cuscoClip = AudioSystem.getClip();
+			cusco.clip=cuscoClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City rio = new City("Río de Janeiro","South America",null,null,"Portuguese", null, null,"Brazil", null,"The song is \"Chove Chuva\""+"\n"
+	    		+ "by Jorge Ben Jor");
+	    InputStream rioStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Rio.png");
+	    Image rioImage = new Image(rioStream);
+	    rio.stream = rioStream;
+	    rio.image=rioImage;
+	    InputStream rioFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/RioFlag.png");
+	    Image rioFlag = new Image(rioFlagStream);
+	    rio.flag=rioFlag;
+	    File rioSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Rio.wav");
+	    rio.clipFile=rioSongStream;
+	    try {
+			Clip rioClip = AudioSystem.getClip();
+			rio.clip=rioClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    
+	    City saoPaulo = new City("São Paulo","South America",null,null,"Portuguese", null, null,"Brazil", null,"The song is \"Não Existe Amor em SP\""+"\n"
+	    		+ "by Criolo");
+	    InputStream saoPaulStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Sao Paulo.png");
+	    Image sauPauloImage = new Image(saoPaulStream);
+	    saoPaulo.stream = saoPaulStream;
+	    saoPaulo.image=sauPauloImage;
+	    InputStream saoPauloFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/SaoPauloFlag.png");
+	    Image saoPauloFlag = new Image(saoPauloFlagStream);
+	    saoPaulo.flag=saoPauloFlag;
+	    File saoPauloSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Sao Paulo.wav");
+	    saoPaulo.clipFile=saoPauloSongStream;
+	    try {
+			Clip saoPauloClip = AudioSystem.getClip();
+			saoPaulo.clip=saoPauloClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City lisbon = new City("Lisbon","Europe",null,null,"Portuguese", null, null,"Portugal", null,"The song is \"Lisboa, Menina, E Moça\""+"\n"
+	    		+ "by Carlos de Carmo");
+	    InputStream lisbonStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Lisbon.png");
+	    Image lisbonImage = new Image(lisbonStream);
+	    lisbon.stream = lisbonStream;
+	    lisbon.image=lisbonImage;
+	    InputStream lisbonFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/LisbonFlag.png");
+	    Image lisbonFlag = new Image(lisbonFlagStream);
+	    lisbon.flag=lisbonFlag;
+	    File lisbonSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Lisbon.wav");
+	    lisbon.clipFile=lisbonSongStream;
+	    try {
+			Clip lisbonClip = AudioSystem.getClip();
+			lisbon.clip=lisbonClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City beijing = new City("Beijing","Asia",null,null,"Mandarin", null, null,"China", null,"The song is \"哪裡都是你『不能想象沒有了你的未來\""+"\n"
+	    		+ "by 隊長Young Captain");
+	    InputStream beijingStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Beijing.png");
+	    Image beijingImage = new Image(beijingStream);
+	    beijing.stream = beijingStream;
+	    beijing.image=beijingImage;
+	    InputStream beijingFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/BeijingFlag.png");
+	    Image beijingFlag = new Image(beijingFlagStream);
+	    beijing.flag=beijingFlag;
+	    File beijingSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Beijing.wav");
+	    beijing.clipFile=beijingSongStream;
+	    try {
+			Clip beijingClip = AudioSystem.getClip();
+			beijing.clip=beijingClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City shanghai = new City("Shanghai","Asia",null,null,"Shanghainese", null, null,"China", null,"The song is a Qinghai Folk Song");
+	    InputStream shanghaiStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Shanghai.png");
+	    Image shanghaiImage = new Image(shanghaiStream);
+	    shanghai.stream = shanghaiStream;
+	    shanghai.image=shanghaiImage;
+	    InputStream shanghaiFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/ShanghaiFlag.png");
+	    Image shanghaiFlag = new Image(shanghaiFlagStream);
+	    shanghai.flag=shanghaiFlag;
+	    File shanghaiSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Shanghai.wav");
+	    shanghai.clipFile=shanghaiSongStream;
+	    try {
+			Clip shanghaiClip = AudioSystem.getClip();
+			shanghai.clip=shanghaiClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City essaouira = new City("Essaouira","Africa",null,null,"Arabic", null, null,"Marocco", null,"The song is \"LM3ALLEM\""+"\n"
+	    		+ "by Saad Lamjarred");
+	    InputStream essaouiraStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Essaouira.png");
+	    Image essaouiraImage = new Image(essaouiraStream);
+	    essaouira.stream = essaouiraStream;
+	    essaouira.image=essaouiraImage;
+	    InputStream essaouiraFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/EssaouiraFlag.png");
+	    Image essaouiraFlag = new Image(essaouiraFlagStream);
+	    essaouira.flag=essaouiraFlag;
+	    File essaouiraSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Marocco.wav");
+	    essaouira.clipFile=essaouiraSongStream;
+	    try {
+			Clip essaouiraClip = AudioSystem.getClip();
+			essaouira.clip=essaouiraClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City nairobi = new City("Nairobi","Africa",null,null,"Swahili", null, null,"Kenya", null,"The song is \"Bablas\""+"\n"
+	    		+ "by Kansoul");
+	    InputStream nairobiStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Nairobi.png");
+	    Image nairobiImage = new Image(nairobiStream);
+	    nairobi.stream = nairobiStream;
+	    nairobi.image=nairobiImage;
+	    InputStream nairobiFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/NairobiFlag.png");
+	    Image nairobiFlag = new Image(nairobiFlagStream);
+	    nairobi.flag=nairobiFlag;
+	    File nairobiSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Nairobi.wav");
+	    nairobi.clipFile=nairobiSongStream;
+	    try {
+			Clip nairobiClip = AudioSystem.getClip();
+			nairobi.clip=nairobiClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City agra = new City("Agra","Asia",null,null,"Hindi", null, null,"India", null,"The song is \"Agra Mein Hai\""+"\n"
+	    		+ "by Vinod Rathod, Farida, Nitin Shankar");
+	    InputStream agraStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Agra.png");
+	    Image agraImage = new Image(agraStream);
+	    agra.stream = agraStream;
+	    agra.image=agraImage;
+	    InputStream agraFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/AgraFlag.png");
+	    Image agraFlag = new Image(agraFlagStream);
+	    agra.flag=agraFlag;
+	    File agraSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Agra.wav");
+	    agra.clipFile=agraSongStream;
+	    try {
+			Clip agraClip = AudioSystem.getClip();
+			agra.clip=agraClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City paris = new City("Paris","Europe",null,null,"French", null, null,"France", null,"The song is \"Memories of Paris\""+"\n"
+	    		+ "by Paris Café Society");
+	    InputStream parisStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Paris.png");
+	    Image parisImage = new Image(parisStream);
+	    paris.stream = parisStream;
+	    paris.image=parisImage;
+	    InputStream parisFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/ParisFlag.png");
+	    Image parisFlag = new Image(parisFlagStream);
+	    paris.flag=parisFlag;
+	    File parisSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Paris.wav");
+	    paris.clipFile=parisSongStream;
+	    try {
+			Clip parisClip = AudioSystem.getClip();
+			paris.clip=parisClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City pyongyang = new City("Pyongyang","Asia",null,null,"Korean", null, null,"North Korea", null,"The song is \"Where Are You, Dear General?\"");
+	    InputStream pyongyangStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Pyongyang.png");
+	    Image pyongyangImage = new Image(pyongyangStream);
+	    pyongyang.stream = pyongyangStream;
+	    pyongyang.image=pyongyangImage;
+	    InputStream pyongyangFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/PyongyangFlag.png");
+	    Image pyongyangFlag = new Image(pyongyangFlagStream);
+	    pyongyang.flag=pyongyangFlag;
+	    File pyongyangSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Pyongyang.wav");
+	    pyongyang.clipFile=pyongyangSongStream;
+	    try {
+			Clip pyongyangClip = AudioSystem.getClip();
+			pyongyang.clip=pyongyangClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City seoul = new City("Seoul","Asia",null,null,"Korean",null, null,"South Korea", null,"The song is \"Dope\""+"\n"
+	    		+ "by BTS");
+	    InputStream seoulStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Seoul.png");
+	    Image seoulImage = new Image(seoulStream);
+	    seoul.stream = seoulStream;
+	    seoul.image=seoulImage;
+	    InputStream seoulFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/SeoulFlag.png");
+	    Image seoulFlag = new Image(seoulFlagStream);
+	    seoul.flag=seoulFlag;
+	    File seoulSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Seoul.wav");
+	    seoul.clipFile=seoulSongStream;
+	    try {
+			Clip seoulClip = AudioSystem.getClip();
+			seoul.clip=seoulClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    
+	    City moscow = new City("Moscow","Europe",null,null,"Russian",null, null,"Russia", null,"The song is \"Moskau\""+"\n"
+	    		+ "by Dschinghis Khan");
+	    InputStream moscowStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Moscow.png");
+	    Image moscowImage = new Image(moscowStream);
+	    moscow.stream = moscowStream;
+	    moscow.image=moscowImage;
+	    InputStream moscowFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/moscowFlag.png");
+	    Image moscowFlag = new Image(moscowFlagStream);
+	    moscow.flag=moscowFlag;
+	    File moscowSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Moscow.wav");
+	    moscow.clipFile=moscowSongStream;
+	    try {
+			Clip moscowClip = AudioSystem.getClip();
+			moscow.clip=moscowClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    
+	    City stPetersburg = new City("St. Petersburg","Europe",null,null,"Russian",null, null,"Russia", null,"The song is \"Dance of the Sugar Plum Fairy\""+"\n"
+	    		+ "by Pyotr Ilyich Tchaikovsky");
+	    InputStream stPetersburgStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/St. Petersburg.png");
+	    Image stPetersburgImage = new Image(stPetersburgStream);
+	    stPetersburg.stream = stPetersburgStream;
+	    stPetersburg.image=stPetersburgImage;
+	    InputStream stPetersburgFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/StPetersburgFlag.png");
+	    Image stPetersburgFlag = new Image(stPetersburgFlagStream);
+	    stPetersburg.flag=stPetersburgFlag;
+	    File stPetersburgSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Petersburg.wav");
+	    stPetersburg.clipFile=stPetersburgSongStream;
+	    System.out.println("assigned clip file");
+	    try {
+			Clip stPetersburgClip = AudioSystem.getClip();
+			 System.out.println("clip made");
+			stPetersburg.clip=stPetersburgClip;
+			System.out.println("clip assigned to object");
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City teotihuacan = new City("Teotihuacan","Latin America",null,null,"Spanish",null, null,"Mexico", null,"The song is \"Frijolero\""+"\n"
+	    		+ "by Molotov");
+	    InputStream teotihuacanStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Teotihuacan.png");
+	    Image teotihuacanImage = new Image(teotihuacanStream);
+	    teotihuacan.stream = teotihuacanStream;
+	    teotihuacan.image=teotihuacanImage;
+	    InputStream teotihuacanFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/TeotihuacanFlag.png");
+	    Image teotihuacanFlag = new Image(teotihuacanFlagStream);
+	    teotihuacan.flag=teotihuacanFlag;
+	    File teotihuacanSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Teotihuacan.wav");
+	    teotihuacan.clipFile=teotihuacanSongStream;
+	    try {
+			Clip teotihuacanClip = AudioSystem.getClip();
+			teotihuacan.clip=teotihuacanClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City havana = new City("Havana","Latin America",null,null,"Spanish",null, null,"Cuba", null,"The song is \"La vida es un carnval\""+"\n"
+	    		+ "by Celia Cruz");
+	    InputStream havanaStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Havana.png");
+	    Image havanaImage = new Image(havanaStream);
+	    havana.stream = havanaStream;
+	    havana.image=havanaImage;
+	    InputStream havanaFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/havanaFlag.png");
+	    Image havanaFlag = new Image(havanaFlagStream);
+	    havana.flag=havanaFlag;
+	    File havanaSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Havana.wav");
+	    havana.clipFile=havanaSongStream;
+	    try {
+			Clip havanaClip = AudioSystem.getClip();
+			havana.clip=havanaClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City barcelona = new City("Barcelona","Europe",null,null,"Catalan",null, null,"Spain", null,"The song is \"Coplas de Curro Dulce\""+"\n"
+	    		+ "by Victoria de los Angles");
+	    InputStream barcelonaStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Barcelona.png");
+	    Image barcelonaImage = new Image(barcelonaStream);
+	    barcelona.stream = barcelonaStream;
+	    barcelona.image=barcelonaImage;
+	    InputStream barcelonaFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/BarcelonaFlag.png");
+	    Image barcelonaFlag = new Image(barcelonaFlagStream);
+	    barcelona.flag=barcelonaFlag;
+	    File barcelonaSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Barcelona.wav");
+	    barcelona.clipFile=barcelonaSongStream;
+	    try {
+			Clip barcelonaClip = AudioSystem.getClip();
+			barcelona.clip=barcelonaClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City petra = new City("Petra","Middle East",null,null,"Arabic",null, null,"Jordan", null,"The song is \"Btaaref Shuur\""+"\n"
+	    		+ "by Adham Nabulsi");
+	    InputStream petraStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Petra.png");
+	    Image petraImage = new Image(petraStream);
+	    petra.stream = petraStream;
+	    petra.image=petraImage;
+	    InputStream petraFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/PetraFlag.png");
+	    Image petraFlag = new Image(petraFlagStream);
+	    petra.flag=petraFlag;
+	    File petraSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Petra.wav");
+	    petra.clipFile=petraSongStream;
+	    try {
+			Clip petraClip = AudioSystem.getClip();
+			petra.clip=petraClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    
+	    City bangkok = new City("Bangkok","Asia",null,null,"Thai",null, null,"Thailand", null,"The song is \"best wishes\""+"\n"
+	    		+ "by BOWKYION");
+	    InputStream bangkokStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Bangkok.jpeg");
+	    Image bangkokImage = new Image(bangkokStream);
+	    bangkok.stream = bangkokStream;
+	    bangkok.image=bangkokImage;
+	    InputStream bangkokFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/BangkokFlag.png");
+	    Image bangkokFlag = new Image(bangkokFlagStream);
+	    bangkok.flag=bangkokFlag;
+	    File bangkokSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Bangkok.wav");
+	    bangkok.clipFile=bangkokSongStream;
+	    try {
+			Clip bangkokClip = AudioSystem.getClip();
+			bangkok.clip=bangkokClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    
+	    City rome = new City("Rome","Europe",null,null,"Italian",null, null,"Italy", null,"The song is \"Tarantella Napoletana\"");
+	    InputStream romeStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Rome.jpeg");
+	    Image romeImage = new Image(romeStream);
+	    rome.stream =romeStream;
+	    rome.image=romeImage;
+	    InputStream romeFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/RomeFlag.png");
+	    Image romeFlag = new Image(romeFlagStream);
+	    rome.flag=romeFlag;
+	    File romeSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Italy.wav");
+	    rome.clipFile=romeSongStream;
+	    try {
+			Clip romeClip = AudioSystem.getClip();
+			rome.clip=romeClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City marrakesh = new City("Marrakesh","Africa",null,null,"Arabic",null, null,"Marocco", null,"The song is \"LM3ALLEM\""+"\n"
+	    		+ "by Saad Lamjarred");
+	    InputStream marrakeshStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Marrakesh.jpeg");
+	    Image marrakeshImage = new Image(marrakeshStream);
+	    marrakesh.stream =marrakeshStream;
+	    marrakesh.image=marrakeshImage;
+	    InputStream marrakeshFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/MarrakeshFlag.png");
+	    Image marrakeshFlag = new Image(marrakeshFlagStream);
+	    marrakesh.flag=marrakeshFlag;
+	    File marrakeshSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Marocco.wav");
+	    marrakesh.clipFile=marrakeshSongStream;
+	    try {
+			Clip marrakeshClip = AudioSystem.getClip();
+			marrakesh.clip=marrakeshClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City venice = new City("Venice","Europe",null,null,"Italian",null, null,"Italy", null,"The song is \"Tarantella Napoletana\"");
+	    InputStream veniceStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Venice.jpeg");
+	    Image veniceImage = new Image(veniceStream);
+	    venice.stream =veniceStream;
+	    venice.image=veniceImage;
+	    InputStream veniceFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/VeniceFlag.png");
+	    Image veniceFlag = new Image(veniceFlagStream);
+	    venice.flag=veniceFlag;
+	    File veniceSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Italy.wav");
+	    venice.clipFile=veniceSongStream;
+	    try {
+			Clip veniceClip = AudioSystem.getClip();
+			venice.clip=veniceClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City london = new City("London","Europe",null,null,"English",null, null,"England", null,"The song is \"Another One Bites the Dust\""+"\n"
+	    		+ "by Queen");
+	    InputStream londonStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/London.jpeg");
+	    Image londonImage = new Image(londonStream);
+	    london.stream =londonStream;
+	    london.image=londonImage;
+	    InputStream londonFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/LondonFlag.png");
+	    Image londonFlag = new Image(londonFlagStream);
+	    london.flag=londonFlag;
+	    File londonSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/London.wav");
+	    london.clipFile=londonSongStream;
+	    try {
+			Clip londonClip = AudioSystem.getClip();
+			london.clip=londonClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City sanFrancisco = new City("San Francisco","North America",null,null,"English",null, null,"the U.S.", null,"The song is \"Oye Como Va\""+"\n"
+	    		+ "by Santana");
+	    InputStream sanFranciscoStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/San Francisco.jpeg");
+	    Image sanFranciscoImage = new Image(sanFranciscoStream);
+	    sanFrancisco.stream =sanFranciscoStream;
+	    sanFrancisco.image=sanFranciscoImage;
+	    InputStream sanFranciscoFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/SanFranciscoFlag.png");
+	    Image sanFranciscoFlag = new Image(sanFranciscoFlagStream);
+	    sanFrancisco.flag=sanFranciscoFlag;
+	    File sanFranciscoSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/San Francisco.wav");
+	    sanFrancisco.clipFile=sanFranciscoSongStream;
+	    try {
+			Clip sanFranciscoClip = AudioSystem.getClip();
+			sanFrancisco.clip=sanFranciscoClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City dubai = new City("Dubai","Middle East",null,null,"Arabic",null, null,"the U.A.E.", null,"The song is \"Hazeen\""+"\n"
+	    		+ "by Ahlem");
+	    InputStream dubaiStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Dubai.jpg");
+	    Image dubaiImage = new Image(dubaiStream);
+	    dubai.stream =dubaiStream;
+	    dubai.image=dubaiImage;
+	    InputStream dubaiFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/DubaiFlag.png");
+	    Image dubaiFlag = new Image(dubaiFlagStream);
+	    dubai.flag=dubaiFlag;
+	    File dubaiSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Dubai.wav");
+	    dubai.clipFile=dubaiSongStream;
+	    try {
+			Clip dubaiClip = AudioSystem.getClip();
+			dubai.clip=dubaiClip;
+	    } catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City chicago = new City("Chicago","North America",null,null,"English",null, null,"the U.S.", null,"The song is \"25 or 6 to 4\""+"\n"
+	    		+ "by Chicago");
+	    InputStream chicagoStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Chicago.jpeg");
+	    Image chicagoImage = new Image(chicagoStream);
+	    chicago.stream =chicagoStream;
+	    chicago.image=chicagoImage;
+	    InputStream chicagoFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/ChicagoFlag.png");
+	    Image chicagoFlag = new Image(chicagoFlagStream);
+	    chicago.flag=chicagoFlag;
+	    File chicagoSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Chicago.wav");
+	    chicago.clipFile=chicagoSongStream;
+	    try {
+			Clip chicagoClip = AudioSystem.getClip();
+			chicago.clip=chicagoClip;
+	    } catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City mecca = new City("Mecca","Middle East",null,null,"Arabic",null, null, "Saudi Arabia", null,"The song is traditional Islamic music.");
+	    InputStream meccaStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Mecca.jpeg");
+	    Image meccaImage = new Image(meccaStream);
+	    mecca.stream =meccaStream;
+	    mecca.image=meccaImage;
+	    InputStream meccaFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/MeccaFlag.png");
+	    Image meccaFlag = new Image(meccaFlagStream);
+	    mecca.flag=meccaFlag;
+	    File meccaSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Mecca.wav");
+	    mecca.clipFile=meccaSongStream;
+	    try {
+			Clip meccaClip = AudioSystem.getClip();
+			mecca.clip=meccaClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City sidney = new City("Sidney","Oceania",null,null,"English",null, null, "Australia", null,"The song is \"Back in Black\""+"\n"
+	    		+ "by AC/DC");
+	    InputStream sidneyStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Sidney.jpg");
+	    Image sidneyImage = new Image(sidneyStream);
+	    sidney.stream =sidneyStream;
+	    sidney.image=sidneyImage;
+	    InputStream sidneyFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/SidneyFlag.png");
+	    Image sidneyFlag = new Image(sidneyFlagStream);
+	    sidney.flag=sidneyFlag;
+	    File sidneySongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Sidney.wav");
+	    sidney.clipFile=sidneySongStream;
+	    try {
+			Clip sidneyClip = AudioSystem.getClip();
+			sidney.clip=sidneyClip;
+			
+		} catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City pisa = new City("Pisa","Europe",null,null,"Italian",null, null,"Italy", null,"The song is \"Tarantella Napoletana\"");
+	    InputStream pisaStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Pisa.jpeg");
+	    Image pisaImage = new Image(pisaStream);
+	    pisa.stream =pisaStream;
+	    pisa.image=pisaImage;
+	    InputStream pisaFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/PisaFlag.png");
+	    Image pisaFlag = new Image(pisaFlagStream);
+	    pisa.flag=pisaFlag;
+	    File pisaSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Italy.wav");
+	    pisa.clipFile=pisaSongStream;
+	    try {
+			Clip pisaClip = AudioSystem.getClip();
+			pisa.clip=pisaClip;
+	    } catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    City itsukushima = new City("Itsukushima","Asia",null,null,"Japanese",null, null,"Japan", null,"The song is \"Ue o Muite Arukō\""+"\n"
+	    		+ "by Kyu Sakamoto");
+	    InputStream itsukushimaStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Itsukushima.jpeg");
+	    Image itsukushimaImage = new Image(itsukushimaStream);
+	    itsukushima.stream =itsukushimaStream;
+	    itsukushima.image=itsukushimaImage;
+	    InputStream itsukushimaFlagStream = new FileInputStream("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/ItsukushimaFlag.png");
+	    Image itsukushimaFlag = new Image(itsukushimaFlagStream);
+	    itsukushima.flag=itsukushimaFlag;
+	    File itsukushimaSongStream = new File("/Users/dwlakes/Desktop/Java Projects/City Guessing Game/Japan.wav");
+	    itsukushima.clipFile=itsukushimaSongStream;
+	    try {
+			Clip itsukushimaClip = AudioSystem.getClip();
+			itsukushima.clip=itsukushimaClip;
+	    } catch (LineUnavailableException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	    
+	    
+	    //Adds cities to an array list
+      ArrayList<City> cityArray = new ArrayList<City>();
+      Collections.addAll(cityArray, petra, barcelona,havana,teotihuacan,stPetersburg,moscow,seoul,pyongyang,paris,agra,nairobi,
+      		essaouira,shanghai,beijing,lisbon,saoPaulo,rio,cusco,NYC,berlin,tokyo,cairo,bangkok,dubai,sanFrancisco,london,venice,
+      		marrakesh,rome,chicago,mecca,sidney,pisa,itsukushima);
+      
+      
+      
+	        //Shuffles the cities
+	        Collections.shuffle(cityArray);
+	        //Creates an iterator to go through the array of cities
+	        ListIterator<City> iterator= cityArray.listIterator();
+	       
+	       
+	        // I goes through cityArray
+	         //Creates an array of answers
+	        City answers[] = {iterator.next(),iterator.next(),iterator.next(),iterator.next()};
+	        
+	          
+	        //Generates a random number based on the array of answers
+	        Random r = new Random();
+	        int newRandomNumber=r.nextInt(answers.length);
+	        System.out.println(cityArray.size());
+	        //loop compares the the city arraylist to the used cites arraylist of used cities to avoid repeating answers. 
+	        if (usedCities.size()==cityArray.size()) {
+	        	usedCities.removeAll(usedCities);
+	        	System.out.println("Used cities restarted");
+	        }
+	        for (int i = 0; i<usedCities.size(); i++) {
+	    		  for (int j= 0; j<answers.length; j++) {
+	    			  while (usedCities.get(i).name==answers[newRandomNumber].name) {
+	    			  newRandomNumber=r.nextInt(answers.length);
+	    			  System.out.println("Avoided repeating an answer"+ usedCities.get(i).name);
+	    			  }
+	    		  }
+	    	  }
+	       
+	        
+	        //Selects a winner based off the random number and stores the info into strings
+	          City cityObject = answers[newRandomNumber];
+	          
+	    	
+	    			try {
+						cityObject.clip = AudioSystem.getClip();
+						System.out.println("problem here?");
+						try {
+							cityObject.clip.open(AudioSystem.getAudioInputStream(cityObject.clipFile));
+							System.out.println("problem here?");
+						} catch (IOException e) {
+							System.out.println(cityObject.name + "music file doesn't work");
+							e.printStackTrace();
+						} catch (UnsupportedAudioFileException e) {
+							System.out.println(cityObject.name + "music file doesn't work");
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} catch (LineUnavailableException e2) {
+						System.out.println(cityObject.name + "music file doesn't work");
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+	    	if (relevantMusic == true) {
+	    		cityObject.clip.start();
+	    	}
+	    	  
+	    	  usedCities.add(cityObject);
+	    	  
+	    	  System.out.println(usedCities.size());
+	    	  for (int i=0; i<usedCities.size();i++) {
+	    		System.out.println("Used city" + usedCities.get(i).name);
+	    	}
+	    	  //Assigns answer choices from the array
+	    	String button1String = answers[0].name;
+			String button2String = answers[1].name;
+			String button3String = answers[2].name;
+			String button4String = answers[3].name;
+			
+	    	 
+			//Creates an image view and UI
+			
+	    	ImageView imageView = new ImageView(answers[newRandomNumber].image);
+	    	imageView.setPreserveRatio(false);
+	        imageView.setFitWidth(350);
+	        imageView.setFitHeight(225);
+	        
+	        ImageView imageFlag = new ImageView(answers[newRandomNumber].flag);
+	        imageFlag.setPreserveRatio(false);
+	        imageFlag.setFitWidth(150);
+	        imageFlag.setFitHeight(65);
+	        
+	        //import globe gif
+	        
+		    Image globeImage = new Image(new File("Globe.gif").toURI().toString());
+		    
+	        ImageView globe = new ImageView(globeImage);
+	    	
+	        //setting layouts
+	       
+	        
+	        results.setText("You've played " +gamesPlayed + " games" +"\n"+
+	        		"You've made "+correctGuesses + " correct and "+incorrectGuesses + " incorrectGuesses"+"\n"+
+	        		"You've used "+numberOfHintsUsed+ " hints"+"\n"+
+	        		"Your correct guess rate is %" +guessRate);
+	        
+	      
+	        //gridPane.add(globe,0,0);
+	        //Ensures answer options aren't duplicated and the correct answer gets an answer choice 
+	        {
+	        	
+	        	//Resets hints after next button is hit
+	        	hint1.setText("Hint 1");
+	        	hint2.setText("Hint 2");
+	        	
+	        //Assigns radio button there a string
+	        RadioButton r1 = new RadioButton(button1String);
+	        RadioButton r2 = new RadioButton(button2String);
+	        RadioButton r3 = new RadioButton(button3String);
+	        RadioButton r4 = new RadioButton(button4String);
+	        
+	        //Makeing radio buttons for music
+	        RadioButton bgMusic = new RadioButton("Background Music");
+	        RadioButton relevantSongs = new RadioButton("Relevant Music");
+	        RadioButton musicOff = new RadioButton("Music Off");
+	        
+	        //Small test
+	        //System.out.println(button1String + button2String + button3String + button4String);
+	        
+	        Button btHint = new Button("Hint");
+	  	  	Button btNext = new Button("Next");
+	  	  	Label answer = new Label("");
+	  	  	Label question = new Label("Which city is this?");
+	  	  
+	        //setting layouts
+	        globe.setPreserveRatio(true);
+	        globe.setFitWidth(200);
+	        globe.setFitHeight(200);
+	        globe.setLayoutX(0);
+	        globe.setLayoutY(0);
+	        globe.setTranslateX(400);
+	        globe.setTranslateY(0);
+	        question.setLayoutX(0);
+	        question.setLayoutY(0);
+	        question.setTranslateX(0);
+	        question.setTranslateY(225);
+	        r1.setLayoutX(0);
+	        r1.setLayoutY(0);
+	        r1.setTranslateX(0);
+	        r1.setTranslateY(245);
+	        r2.setLayoutX(0);
+	        r2.setLayoutY(0);
+	        r2.setTranslateX(0);
+	        r2.setTranslateY(265);
+	        r3.setLayoutX(0);
+	        r3.setLayoutY(0);
+	        r3.setTranslateX(0);
+	        r3.setTranslateY(285);
+	        r4.setLayoutX(0);
+	        r4.setLayoutY(0);
+	        r4.setTranslateX(0);
+	        r4.setTranslateY(305);
+	        results.setLayoutX(0);
+	        results.setLayoutY(0);
+	        results.setTranslateX(110);
+	        results.setTranslateY(225);
+	        hint1.setLayoutX(0);
+	        hint1.setLayoutY(0);
+	        hint1.setTranslateX(400);
+	        hint1.setTranslateY(225);
+	        hint2.setLayoutX(0);
+	        hint2.setLayoutY(0);
+	        hint2.setTranslateX(400);
+	        hint2.setTranslateY(245);
+	        answer.setLayoutX(0);
+	        answer.setLayoutY(0);
+	        answer.setTranslateX(0);
+	        answer.setTranslateY(325);
+	        btNext.setLayoutX(0);
+	        btNext.setLayoutY(0);
+	        btNext.setTranslateX(0);
+	        btNext.setTranslateY(345);
+	        songInfoLabel.setLayoutX(0);
+	        songInfoLabel.setLayoutY(0);
+	        songInfoLabel.setTranslateX(50);
+	        songInfoLabel.setTranslateY(340);
+	        btHint.setLayoutX(0);
+	        btHint.setLayoutY(0);
+	        btHint.setTranslateX(450);
+	        btHint.setTranslateY(345);
+	        bgMusic.setLayoutX(0);
+	        bgMusic.setLayoutY(0);
+	        bgMusic.setTranslateX(450);
+	        bgMusic.setTranslateY(285);
+	        relevantSongs.setLayoutX(0);
+	        relevantSongs.setLayoutY(0);
+	        relevantSongs.setTranslateX(450);
+	        relevantSongs.setTranslateY(305);
+	        musicOff.setLayoutX(0);
+	        musicOff.setLayoutY(0);
+	        musicOff.setTranslateX(450);
+	        musicOff.setTranslateY(325);
+	        imageFlag.setLayoutX(0);
+	        imageFlag.setLayoutY(0);
+	        imageFlag.setTranslateX(290);
+	        imageFlag.setTranslateY(300);
+	        
+	       
+	        Group root = new Group(globe,question,imageView,results,r1,r2,r3,r4,hint1,hint2,btNext,btHint
+	        		,answer,relevantSongs,bgMusic,musicOff,imageFlag,songInfoLabel);
+	        Scene scene1 = new Scene(root, 650, 375);
+	        
+	        //assigns music buttons to toggle group
+	        ToggleGroup music = new ToggleGroup();
+	        bgMusic.setToggleGroup(music);
+	        relevantSongs.setToggleGroup(music);
+	        musicOff.setToggleGroup(music);
+	        //making music button do things
+	        music.selectedToggleProperty().addListener(new ChangeListener<Toggle>() 
+	        {
+	            public void changed(ObservableValue<? extends Toggle> ob, 
+	                                                    Toggle o, Toggle n)
+	            {
+	  
+	                RadioButton rb = (RadioButton)n.getToggleGroup().getSelectedToggle();;
+	                String musicSelection = rb.getText();
+	                if (musicSelection.equals("Relevant Music")) {
+	                    song.stop();
+	                    cityObject.clip.start();
+	                    relevantMusic = true;
+	                }else if(musicSelection.equals("Background Music")){
+	                	relevantMusic = false;
+	                	cityObject.clip.stop();
+	                	song.start();
+	                	song.loop(Clip.LOOP_CONTINUOUSLY);
+	                	
+	                }else if(musicSelection.equals("Music Off")){
+	                	relevantMusic = false;
+	                	cityObject.clip.stop();
+	                	song.stop();
+	                	
+	                }
+	            }
+	        });
+	        
+	        
+	        //Assigns answer buttons to a toggle group
+	        ToggleGroup tg = new ToggleGroup();
+	        r1.setToggleGroup(tg);
+	        r2.setToggleGroup(tg);
+	        r3.setToggleGroup(tg);
+	        r4.setToggleGroup(tg);
+	        
+	        //Making the answer buttons do things
+	        tg.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+	            @Override
+	            public void changed(ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1) {
+
+	                RadioButton chk = (RadioButton)t1.getToggleGroup().getSelectedToggle(); // Cast object to radio button
+	                String userAnswer = chk.getText();
+	                if (cityObject.name == userAnswer) {
+	                	answer.setText("Nice! "+cityObject.name +" is in "+cityObject.country+"!");
+	                	correctGuesses++;
+	                	totalGuesses = correctGuesses+incorrectGuesses;
+	                	guessRate = (int) ((correctGuesses/totalGuesses)*100);
+	                	results.setText("You've played " +gamesPlayed + " games" +"\n"+
+	        	        		"You've made "+correctGuesses + " correct and "+incorrectGuesses + " incorrectGuesses"+"\n"+
+	        	        		"You've used "+numberOfHintsUsed+ " hints"+"\n"+
+	        	        		"Your correct guess rate is %" +guessRate);
+	                	songInfoLabel.setText(cityObject.songInfo);
+	                	System.out.println(correctGuesses+incorrectGuesses);
+	                	System.out.println(correctGuesses/(correctGuesses+incorrectGuesses));
+	                }else {
+	                	answer.setText("Try again!");
+	                	incorrectGuesses++;
+	                	totalGuesses = correctGuesses+incorrectGuesses;
+	                	guessRate = (int) ((correctGuesses/totalGuesses)*100);
+	                	results.setText("You've played " +gamesPlayed + " games" +"\n"+
+	        	        		"You've made "+correctGuesses + " correct and "+incorrectGuesses + " incorrectGuesses"+"\n"+
+	        	        		"You've used "+numberOfHintsUsed+ " hints"+"\n"+
+	        	        		"Your correct guess rate is %" +guessRate);
+	                	System.out.println(correctGuesses+incorrectGuesses);
+	                	System.out.println(correctGuesses/(correctGuesses+incorrectGuesses));
+	                }  
+
+	            }
+	        });
+	        
+	       //Button for hints	   
+btHint.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+  @Override
+  public void handle(MouseEvent event) {
+      count++;
+      //Counter determines number of hints the user used and reveals hints
+      if (count==1) {
+      	hint1.setText("Most people here speak "+cityObject.language);
+      	numberOfHintsUsed++;
+      	results.setText("You've played " +gamesPlayed + " games" +"\n"+
+        		"You've made "+correctGuesses + " correct and "+incorrectGuesses + " incorrectGuesses"+"\n"+
+        		"You've used "+numberOfHintsUsed+ " hints"+"\n"+
+        		"Your correct guess rate is %" +guessRate);
+      }else if (count ==2) {
+    	numberOfHintsUsed++;
+      	hint2.setText("The city is in " + cityObject.continent);
+      	results.setText("You've played " +gamesPlayed + " games" +"\n"+
+        		"You've made "+correctGuesses + " correct and "+incorrectGuesses + " incorrectGuesses"+"\n"+
+        		"You've used "+numberOfHintsUsed+ " hints"+"\n"+
+        		"Your correct guess rate is %" +guessRate);
+      } 
+  } 
+
+});
+	        
+	        primaryStage.setScene(scene1);
+	        primaryStage.show();
+	        
+	        //Restarts game
+	        btNext.setOnAction(e -> {
+				try {
+					//resets counter for hints
+					cityObject.clip.stop();
+					count =0;
+					gamesPlayed =gamesPlayed +1;
+					songInfoLabel.setText("");
+					start(primaryStage);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			});                   
+
+}
+}
+          
+
+
+
+
+	public static void main(String[] args) {
+		
+		
+Application.launch(args);
+	
+	}
+	
+}
